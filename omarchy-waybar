@@ -1,0 +1,174 @@
+#!/usr/bin/env bash
+# omarchy-waybar - launcher for Waybar themes using Walker (Omarchy style)
+# Updated to robustly resolve helper scripts when launched from Hyprland keybindings
+
+set -euo pipefail
+
+# -------------------------
+# Helper resolver (Option A)
+# Ensures the script finds the omarchy-waybar-* helpers even when PATH is minimal
+# -------------------------
+BIN_DIR_CANDIDATES=(
+  "$HOME/.local/bin"
+  "/usr/local/bin"
+  "/usr/bin"
+)
+
+resolve_helper() {
+  local name="$1"
+  # prefer existing in PATH
+  if command -v "${name}" >/dev/null 2>&1; then
+    command -v "${name}"
+    return 0
+  fi
+  # otherwise search common locations
+  for d in "${BIN_DIR_CANDIDATES[@]}"; do
+    if [[ -x "$d/$name" ]]; then
+      printf '%s' "$d/$name"
+      return 0
+    fi
+  done
+  # not found
+  return 1
+}
+
+OMARCHY_WAYBAR_LIST="$(resolve_helper omarchy-waybar-list || true)"
+OMARCHY_WAYBAR_CURRENT="$(resolve_helper omarchy-waybar-current || true)"
+OMARCHY_WAYBAR_SET="$(resolve_helper omarchy-waybar-set || true)"
+
+# If any helper is missing, warn (but continue with graceful errors later)
+if [[ -z "$OMARCHY_WAYBAR_LIST" || -z "$OMARCHY_WAYBAR_SET" ]]; then
+  notify-send "Waybar" "Some helper scripts not found in PATH. The launcher may not work from keybinds." 2>/dev/null || true
+fi
+
+# -------------------------
+# menu() - compatible with omarchy-menu's helper
+# -------------------------
+menu() {
+  local prompt="$1"
+  local options="$2"
+  local extra="$3"
+  local preselect="$4"
+
+  # split extra into args
+  read -r -a args <<<"$extra"
+
+  if [[ -n "$preselect" ]]; then
+    local index
+    index=$(echo -e "$options" | grep -nxF "$preselect" | cut -d: -f1)
+    if [[ -n "$index" ]]; then
+      args+=("-c" "$index")
+    fi
+  fi
+
+  # Use omarchy-launch-walker as in omarchy-menu. If not present, fall back to walker.
+  if command -v omarchy-launch-walker >/dev/null 2>&1; then
+    echo -e "$options" | omarchy-launch-walker --dmenu --width 295 --minheight 1 --maxheight 600 -p "$prompt…" "${args[@]}" 2>/dev/null
+  elif command -v walker >/dev/null 2>&1; then
+    echo -e "$options" | walker --dmenu --width 295 --minheight 1 --maxheight 600 -p "$prompt…" "${args[@]}" 2>/dev/null
+  else
+    # No walker available — fallback to simple selection prompt
+    IFS=$'\n' read -rd '' -a items <<<"$options" || items=()
+    if (( ${#items[@]} == 0 )); then
+      echo ""
+      return 0
+    fi
+    printf '%s\n' "Select: $prompt"
+    for i in "${!items[@]}"; do
+      printf '%2d) %s\n' $((i+1)) "${items[i]}"
+    done
+    printf 'Enter number (or q to cancel): '
+    read -r choice
+    if [[ -z "$choice" || "$choice" =~ ^[Qq]$ ]]; then
+      echo "CNCLD"
+      return 0
+    fi
+    if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
+      echo ""
+      return 0
+    fi
+    idx=$((choice-1))
+    if (( idx < 0 || idx >= ${#items[@]} )); then
+      echo ""
+      return 0
+    fi
+    printf '%s\n' "${items[idx]}"
+  fi
+}
+
+# -------------------------
+# show_waybar_menu() - similar to show_theme_menu()
+# -------------------------
+show_waybar_menu() {
+  local list current sel
+
+  # obtain list via resolved helper
+  if [[ -n "$OMARCHY_WAYBAR_LIST" && -x "$OMARCHY_WAYBAR_LIST" ]]; then
+    if ! list="$("$OMARCHY_WAYBAR_LIST" 2>/dev/null)"; then
+      list=""
+    fi
+  else
+    list=""
+  fi
+
+  if [[ -z "$list" ]]; then
+    # No styles found — mimic earlier behaviour: call back_to if available, otherwise notify
+    if declare -f back_to >/dev/null 2>&1; then
+      back_to show_style_menu
+    else
+      notify-send "Waybar" "No waybar styles found" 2>/dev/null || true
+      echo "No waybar styles found" >&2
+      exit 1
+    fi
+    return 0
+  fi
+
+  # get current if possible (ignore errors)
+  if [[ -n "$OMARCHY_WAYBAR_CURRENT" && -x "$OMARCHY_WAYBAR_CURRENT" ]]; then
+    current="$("$OMARCHY_WAYBAR_CURRENT" 2>/dev/null || true)"
+  else
+    current=""
+  fi
+
+  sel=$(menu "Waybar theme" "$list" "" "$current")
+  if [[ "$sel" == "CNCLD" || -z "$sel" ]]; then
+    if declare -f back_to >/dev/null 2>&1; then
+      back_to show_style_menu
+    else
+      exit 0
+    fi
+  else
+    # apply using resolved setter
+    if [[ -n "$OMARCHY_WAYBAR_SET" && -x "$OMARCHY_WAYBAR_SET" ]]; then
+      "$OMARCHY_WAYBAR_SET" "$sel"
+    else
+      notify-send "Waybar" "Cannot apply theme: setter not found" 2>/dev/null || true
+      echo "Setter not found: omarchy-waybar-set" >&2
+      exit 1
+    fi
+  fi
+}
+
+# -------------------------
+# Integration point / navigation
+# -------------------------
+if [[ -n "${1:-}" ]]; then
+  BACK_TO_EXIT=true
+
+  if declare -f go_to_menu >/dev/null 2>&1; then
+    go_to_menu "$1"
+    exit $?
+  fi
+
+  case "${1,,}" in
+    *waybar*|*style*|*theme*)
+      show_waybar_menu
+      ;;
+    *)
+      show_waybar_menu
+      ;;
+  esac
+else
+  show_waybar_menu
+fi
+

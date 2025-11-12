@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+input="${1:-}"
+
+# handle walker cancel token
+if [[ "$input" == "CNCLD" ]]; then
+  exit 0
+fi
+
+if [[ -z "$input" ]]; then
+  >&2 echo "Usage: omarchy-waybar-set \"Pretty Name\""
+  exit 1
+fi
+
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+WAYBAR_DIR="$XDG_CONFIG_HOME/waybar"
+STYLES_DIR="$WAYBAR_DIR/styles"
+CURRENT_SYMLINK="$WAYBAR_DIR/current"
+
+# Map pretty -> folder (lowercase, spaces->hyphen, underscores->hyphen)
+folder="$(printf '%s' "$input" \
+  | sed -E 's/<[^>]+>//g' \
+  | sed -E 's/^[[:space:]]+|[[:space:]]+$//g' \
+  | tr '[:upper:]' '[:lower:]' \
+  | sed -E 's/[[:space:]]+/-/g' \
+  | tr '_' '-')"
+
+theme_path="$STYLES_DIR/$folder"
+
+if [[ ! -d "$theme_path" ]]; then
+  notify-send "Waybar theme" "Theme '$input' not found (looked for '$folder')"
+  >&2 echo "Theme not found: $theme_path"
+  exit 1
+fi
+
+# prepare directories
+mkdir -p "$WAYBAR_DIR"
+mkdir -p "$STYLES_DIR"
+
+# backup existing conflicting files
+timestamp="$(date +%Y%m%dT%H%M%S)"
+backup_dir="$WAYBAR_DIR/.backup/$timestamp"
+mkdir -p "$backup_dir"
+
+# For safety: if current symlink exists and already points to this theme, do nothing
+if [[ -L "$CURRENT_SYMLINK" && "$(readlink -f "$CURRENT_SYMLINK")" = "$theme_path" ]]; then
+  echo "Theme '$input' already active."
+  exit 0
+fi
+
+# Move existing items of WAYBAR_DIR (only those that would conflict) to backup
+shopt -s nullglob dotglob
+for src in "$theme_path"/*; do
+  name="$(basename "$src")"
+  dest="$WAYBAR_DIR/$name"
+  # if dest exists and is not a symlink to src, back it up
+  if [[ -e "$dest" && ! ( -L "$dest" && "$(readlink -f "$dest")" = "$src" ) ]]; then
+    mv -v -- "$dest" "$backup_dir/" 2>/dev/null || cp -a -- "$dest" "$backup_dir/" 2>/dev/null || true
+  fi
+done
+
+# Create/Update symlinks for every item in theme_path into WAYBAR_DIR
+for src in "$theme_path"/*; do
+  name="$(basename "$src")"
+  dest="$WAYBAR_DIR/$name"
+  # atomic create/update symlink
+  ln -sfn -- "$src" "$dest"
+done
+shopt -u nullglob dotglob
+
+# Atomically update the current symlink inside the waybar directory
+ln -sfn -- "$theme_path" "$CURRENT_SYMLINK"
+
+# Ensure style.css and config.jsonc in waybar root exist as symlinks (if they are present in the theme)
+# (This is redundant because above loop already did it, but keeps intent explicit)
+if [[ -e "$theme_path/config.jsonc" ]]; then
+  ln -sfn -- "$theme_path/config.jsonc" "$WAYBAR_DIR/config.jsonc"
+fi
+if [[ -e "$theme_path/style.css" ]]; then
+  ln -sfn -- "$theme_path/style.css" "$WAYBAR_DIR/style.css"
+fi
+
+# Restart waybar using omarchy helper if present; otherwise safe fallback
+if command -v omarchy-restart-waybar >/dev/null 2>&1; then
+  omarchy-restart-waybar || true
+else
+  # try systemd user restart (if waybar is run as systemd user service)
+  if systemctl --user is-active --quiet waybar.service 2>/dev/null; then
+    systemctl --user restart waybar.service || true
+  else
+    # fallback: kill and relaunch
+    pkill -x waybar || true
+    # try to start a background waybar if available in PATH (may be handled by your session manager)
+    if command -v waybar >/dev/null 2>&1; then
+      nohup waybar >/dev/null 2>&1 & disown || true
+    fi
+  fi
+fi
+
+notify-send "Waybar theme" "Applied theme: $input"
+echo "Applied waybar theme: $input -> $theme_path"

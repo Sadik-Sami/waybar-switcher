@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+WAYBAR_DIR="$XDG_CONFIG_HOME/waybar"
+CURRENT_SYMLINK="$WAYBAR_DIR/current"
+
+if [[ ! -e "$CURRENT_SYMLINK" ]]; then
+  # If no symlink, try to look for config.jsonc target as a hint
+  if [[ -L "$WAYBAR_DIR/config.jsonc" ]]; then
+    target="$(readlink -f "$WAYBAR_DIR/config.jsonc" || true)"
+    if [[ -n "$target" ]]; then
+      # assume target is inside styles/<name>/
+      dir="$(dirname "$target")"
+      base="$(basename "$dir")"
+      pretty="$(printf '%s' "$base" | sed -E 's/[_-]+/ /g' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1')"
+      printf '%s\n' "$pretty"
+      exit 0
+    fi
+  fi
+  >&2 echo "No current symlink at $CURRENT_SYMLINK"
+  exit 1
+fi
+
+# resolve and prettify
+target="$(readlink -f -- "$CURRENT_SYMLINK" 2>/dev/null || true)"
+if [[ -z "$target" ]]; then
+  >&2 echo "Failed to resolve $CURRENT_SYMLINK"
+  exit 1
+fi
+
+# If target points inside styles/<name>, extract basename
+base="$(basename "$target")"
+pretty="$(printf '%s' "$base" | sed -E 's/[_-]+/ /g' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1')"
+printf '%s\n' "$pretty"

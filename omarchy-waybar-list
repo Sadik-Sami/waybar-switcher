@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+STYLES_DIR="$XDG_CONFIG_HOME/waybar/styles"
+
+if [[ ! -d "$STYLES_DIR" ]]; then
+  >&2 echo "No waybar styles directory: $STYLES_DIR"
+  exit 1
+fi
+
+# List immediate dirs (and symlinks to dirs), prettify names
+find "$STYLES_DIR" -mindepth 1 -maxdepth 1 \( -type d -o -type l \) -print0 \
+  | sort -z \
+  | while IFS= read -r -d '' p; do
+      base="$(basename "$p")"
+      # prettify: replace hyphens/underscores with spaces, titlecase
+      pretty="$(printf '%s' "$base" \
+        | sed -E 's/[_-]+/ /g' \
+        | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1')"
+      printf '%s\n' "$pretty"
+    done
