@@ -1,0 +1,104 @@
+@import "../omarchy/current/theme/waybar.css";
+
+* {
+  background-color: @background;
+  color: @foreground;
+
+  border: none;
+  border-radius: 10px;
+  padding: 1.75px 2px;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font Propo';
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+#workspaces button {
+	box-shadow: none;
+	text-shadow: none;
+	padding: 0px 1px;
+	animation: gradient_f 20s ease-in infinite;
+	transition: all 0.5s cubic-bezier(0.55, -0.68, 0.48, 1.682);
+}
+
+#workspaces button.active {
+	padding: 0px 2px;
+	animation: gradient_f 20s ease-in infinite;
+	transition: all 0.3s cubic-bezier(0.55, -0.68, 0.48, 1.682);
+}
+
+#workspaces button.urgent {
+	border-radius: 10px;
+}
+#workspaces button.empty {
+  opacity: 0.5;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin: 0 4px;
+}
+
+#battery,
+#bluetooth,
+#clock,
+#mpris,
+#network,
+#pulseaudio,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-update,
+#custom-omarchy {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-right: 3px;
+	padding-left: 3px;
+}
+
+#pulseaudio.icon {
+  padding: 0px;
+}
+
+#tray {
+  padding-top: 6px;
+}
+
+tooltip {
+  padding: 2px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+
+  padding: 0 11 0 10;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #a55555;
+}
+
+tooltip {
+  border-radius: 10px;
+}
