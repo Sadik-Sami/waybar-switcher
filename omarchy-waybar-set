@@ -39,9 +39,9 @@ mkdir -p "$WAYBAR_DIR"
 mkdir -p "$STYLES_DIR"
 
 # backup existing conflicting files
-timestamp="$(date +%Y%m%dT%H%M%S)"
-backup_dir="$WAYBAR_DIR/.backup/$timestamp"
-mkdir -p "$backup_dir"
+# timestamp="$(date +%Y%m%dT%H%M%S)"
+# backup_dir="$WAYBAR_DIR/.backup/$timestamp"
+# mkdir -p "$backup_dir"
 
 # For safety: if current symlink exists and already points to this theme, do nothing
 if [[ -L "$CURRENT_SYMLINK" && "$(readlink -f "$CURRENT_SYMLINK")" = "$theme_path" ]]; then
@@ -50,15 +50,15 @@ if [[ -L "$CURRENT_SYMLINK" && "$(readlink -f "$CURRENT_SYMLINK")" = "$theme_pat
 fi
 
 # Move existing items of WAYBAR_DIR (only those that would conflict) to backup
-shopt -s nullglob dotglob
-for src in "$theme_path"/*; do
-  name="$(basename "$src")"
-  dest="$WAYBAR_DIR/$name"
-  # if dest exists and is not a symlink to src, back it up
-  if [[ -e "$dest" && ! ( -L "$dest" && "$(readlink -f "$dest")" = "$src" ) ]]; then
-    mv -v -- "$dest" "$backup_dir/" 2>/dev/null || cp -a -- "$dest" "$backup_dir/" 2>/dev/null || true
-  fi
-done
+# shopt -s nullglob dotglob
+# for src in "$theme_path"/*; do
+#   name="$(basename "$src")"
+#   dest="$WAYBAR_DIR/$name"
+#   # if dest exists and is not a symlink to src, back it up
+#   if [[ -e "$dest" && ! ( -L "$dest" && "$(readlink -f "$dest")" = "$src" ) ]]; then
+#     mv -v -- "$dest" "$backup_dir/" 2>/dev/null || cp -a -- "$dest" "$backup_dir/" 2>/dev/null || true
+#   fi
+# done
 
 # Create/Update symlinks for every item in theme_path into WAYBAR_DIR
 for src in "$theme_path"/*; do
