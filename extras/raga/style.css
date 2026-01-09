@@ -1,0 +1,248 @@
+/* =============================================================================
+   1. COLOR VARIABLES (Catppuccin Mocha)
+   ========================================================================== */
+@import "../omarchy/current/theme/waybar.css";
+
+/* Core Colors */
+@define-color foreground #cdd6f4;
+@define-color background #11111b;
+@define-color dark-bg    #11111b;
+@define-color hover-bg   #313244;
+
+/* Palette */
+@define-color rosewater  #f5e0dc;
+@define-color flamingo   #f2cdcd;
+@define-color pink       #f5c2e7;
+@define-color mauve      #cba6f7;
+@define-color red        #f38ba8;
+@define-color maroon     #eba0ac;
+@define-color peach      #fab387;
+@define-color yellow     #f9e2af;
+@define-color green      #a6e3a1;
+@define-color teal       #94e2d5;
+@define-color sky        #89dceb;
+@define-color sapphire   #74c7ec;
+@define-color blue       #89b4fa;
+@define-color lavender   #b4befe;
+
+/* =============================================================================
+   2. GLOBAL SETTINGS
+   ========================================================================== */
+* {
+  font-family: 'JetBrainsMono Nerd Font Propo';
+  font-size: 13px;
+  font-weight: bold;
+  border: none;
+  border-radius: 20px;
+  min-height: 0;
+}
+
+tooltip {
+  background: @dark-bg;
+  border-radius: 15px;
+  border: 1px solid @green;
+}
+
+tooltip label {
+  color: @foreground;
+  padding: 5px;
+}
+
+window#waybar {
+  background-color: transparent;
+  transition-property: background-color;
+  transition-duration: .5s;
+  margin: 10px;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+  background: transparent;
+  margin: 5px;
+}
+
+/* =============================================================================
+   3. WORKSPACES (1-10 RAINBOW)
+   ========================================================================== */
+#workspaces {
+  background-color: @dark-bg;
+  margin: 2px 4px;
+  padding: 0 5px;
+  border-radius: 20px;
+  opacity: 0.9;
+}
+
+#workspaces button {
+  color: @foreground;
+  background-color: transparent;
+  margin: 4px 2px;
+  padding: 0 5px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+/* HOVER EFFECT: GREEN */
+#workspaces button:hover {
+  background-color: @hover-bg;
+  color: @green;
+}
+
+/* BASE ACTIVE STATE */
+#workspaces button.active {
+  color: @dark-bg;
+  min-width: 30px;
+  background-size: 400% 400%;
+}
+
+/* --- SPECIFIC COLORS PER WORKSPACE (1-10) --- */
+#workspaces button:nth-child(1).active { background-color: @red; }
+#workspaces button:nth-child(2).active { background-color: @green; }
+#workspaces button:nth-child(3).active { background-color: @yellow; }
+#workspaces button:nth-child(4).active { background-color: @blue; }
+#workspaces button:nth-child(5).active { background-color: @mauve; }
+#workspaces button:nth-child(6).active { background-color: @teal; }
+#workspaces button:nth-child(7).active { background-color: @lavender; }
+#workspaces button:nth-child(8).active { background-color: @peach; }
+#workspaces button:nth-child(9).active { background-color: @pink; }
+#workspaces button:nth-child(10).active { background-color: @sapphire; }
+
+#workspaces button.urgent {
+  color: @red;
+  background-color: @yellow;
+}
+
+#workspaces button.empty {
+  color: #6c7086;
+}
+
+/* =============================================================================
+   4. MODULES - BASE STYLE
+   ========================================================================== */
+#tray,
+#window,
+#cava,
+#mpris,
+#cpu,
+#memory,
+#battery,
+#network,
+#temperature,
+#bluetooth,
+#pulseaudio,
+#custom-omarchy,
+#custom-weather,
+#custom-update,
+#custom-updatespacman,
+#custom-cava,
+#custom-calendar,
+#custom-netspeed,
+#custom-gpu,
+#clock,
+#tray-expander,
+#disk,
+#idle_inhibitor {
+  background-color: @dark-bg;
+  color: @foreground;
+  margin: 2px;
+  padding: 0 15px;
+  border-radius: 20px;
+  opacity: 0.9;
+  padding: 2px 15px;
+  transition: all 0.3s ease;
+}
+
+/* =============================================================================
+   5. MODULES - COLORFUL TEXT OVERRIDES
+   ========================================================================== */
+#custom-omarchy { color: @mauve; padding: 0 12px; font-size: 12px; }
+#window { margin: 2px 4px; color: @foreground; }
+#clock { font-weight: 800; color: @sapphire; }
+#pulseaudio { color: @blue; }
+#cpu { color: @red; }
+#memory { color: @yellow; }
+#disk { color: @peach; }
+#temperature { color: @maroon; }
+#battery { color: @green; }
+#network { color: @pink; }
+#bluetooth { color: @blue; }
+#custom-update, #custom-updatespacman { color: @red; }
+#custom-weather { color: @teal; }
+#cava, #custom-cava { color: @mauve; padding: 0 12px; }
+#mpris { min-width: 200px; color: @green; }
+#tray-expander { padding: 0 5px; color: @foreground; }
+#custom-expand-icon { color: @foreground; margin-left: 8px; }
+
+/* =============================================================================
+   6. UNIVERSAL HOVER EFFECT (GREEN)
+   ========================================================================== */
+#custom-omarchy:hover,
+#custom-update:hover,
+#custom-updatespacman:hover,
+#cava:hover,
+#custom-cava:hover,
+#tray:hover,
+#cpu:hover,
+#memory:hover,
+#temperature:hover,
+#bluetooth:hover,
+#network:hover,
+#pulseaudio:hover,
+#battery:hover,
+#clock:hover,
+#custom-weather:hover,
+#custom-calendar:hover,
+#custom-netspeed:hover,
+#custom-gpu:hover,
+#disk:hover,
+#idle_inhibitor:hover,
+#mpris:hover,
+#tray-expander:hover {
+  background-color: @hover-bg;
+  color: @green; /* All modules turn GREEN on hover */
+}
+
+/* =============================================================================
+   7. CRITICAL / WARNING STATES
+   ========================================================================== */
+#battery.charging,
+#battery.plugged {
+  color: @green;
+}
+
+#battery.critical:not(.charging) {
+  background-color: @red;
+  color: @dark-bg;
+  animation-name: blink;
+  animation-duration: 0.5s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+#disk.warning {
+  color: @yellow;
+}
+
+#disk.critical {
+  color: @red;
+  animation-name: blink;
+  animation-duration: 0.5s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+#temperature.critical {
+  color: @red;
+  background-color: rgba(243, 139, 168, 0.2);
+}
+
+@keyframes blink {
+  to {
+    background-color: @foreground;
+    color: @red;
+  }
+}

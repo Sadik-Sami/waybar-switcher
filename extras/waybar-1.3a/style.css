@@ -1,0 +1,128 @@
+@import "../omarchy/current/theme/waybar.css";
+
+* {
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: 'JetbrainsMono Nerd Font';
+  font-weight: bold;
+  font-size: 12px;
+}
+
+window#waybar {
+  background: transparent;
+  margin-top: 5px;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  padding: 0;
+  margin-left: 0;
+}
+
+mpris#waybar.empty #mpris {
+  background: transparent;
+  padding: 0;
+  margin-right: 0;
+}
+
+.modules-left {
+  margin-left: 5px;
+}
+
+.modules-right {
+  margin-right: 5px;
+}
+
+#workspaces button.empty {
+  opacity: 0.5;
+}
+
+#taskbar button,
+#workspaces button {
+    color: @bright_red;
+    box-shadow: none;
+	  text-shadow: none;
+	  padding: 0px;
+	  padding-bottom: 0px;
+	  padding-top: 1px;
+    border-radius: 9px;
+    padding-left: 4px;
+    padding-right: 4px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#taskbar button:hover,
+#workspaces button:hover {
+    color: @yellow;
+    border-radius: 20px;
+ 	  padding-left: 2px;
+    padding-right: 2px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#taskbar button.active,
+#workspaces button.active {
+	  color: @red;
+	  background-color: alpha(@background, 0.75);
+    padding-left: 10px;
+    padding-right: 10px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#workspaces button.urgent {
+    color: @red;
+    border-radius: 10px;
+}
+
+#workspaces button.persistent {
+	border-radius: 10px;
+}
+
+#custom-weather,
+#memory,
+#custom-update,
+#backlight,
+#window,
+#mpris,
+#tray,
+#cpu,
+#battery,
+#network,
+#bluetooth,
+#pulseaudio,
+#clock,
+#custom-omarchy,
+#workspaces,
+#tray-expander {
+  background-color: @background;
+  border-radius: 10px;
+  padding: 1.75px 10px;
+  margin: 5px 2px;
+}
+#network {
+  padding-right: 16px;
+  color: @green;
+}
+#pulseaudio {
+  padding-right: 15px;
+  color: @blue;
+}
+#custom-omarchy {
+  padding-left: 10px;
+}
+#custom-update {
+  padding-left: 7px;
+}
+
+#custom-expand-icon {
+  margin-right: -4px;
+}
+
+tooltip {
+  border-radius: 10px;
+  padding: 2px;
+}

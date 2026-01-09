@@ -1,0 +1,10 @@
+{
+  "include": [
+    "modules/core.jsonc",
+    "modules/layout.jsonc",
+    "modules/hyprland.jsonc",
+    "modules/custom.jsonc",
+    "modules/custom-weather.jsonc",
+    "modules/system.jsonc"
+  ]
+}

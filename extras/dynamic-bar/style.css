@@ -1,0 +1,165 @@
+@import '../omarchy/current/theme/waybar.css';
+* {
+	border: none;
+	border-radius: 0;
+
+	font-family: 'JetBrainsMono Nerd Font';
+	font-weight: bold;
+	font-size: 12px;
+
+	min-height: 0;
+	margin: 0;
+}
+
+window#waybar {
+	background: transparent;
+}
+
+tooltip {
+	background: @background;
+	border-radius: 8px;
+}
+
+tooltip label {
+	color: @foreground;
+	padding: 6px;
+}
+
+.modules-right {
+	margin-right: 4px;
+}
+
+.modules-left {
+	margin-left: 4px;
+}
+
+#workspaces {
+	background-color: @background;
+	color: @foreground;
+	border-radius: 16px;
+	padding: 5px 3px;
+}
+
+#workspaces button {
+	background-color: @bright_black;
+	color: @background;
+	padding: 2.5px 8px;
+	margin: 0 4px;
+	border-radius: 16px;
+	transition: all 0.3s ease-in-out;
+}
+
+#workspaces button:hover {
+	background-color: @magenta;
+	color: @background;
+	min-width: 50px;
+	border-radius: 16px;
+	transition: all 0.3s ease-in-out;
+	background-size: 400% 400%;
+}
+
+#workspaces button.active {
+	background-color: @blue;
+	color: @background;
+	min-width: 50px;
+	border-radius: 16px;
+	transition: all 0.3s ease-in-out;
+	font-size: 12px;
+}
+
+#workspaces button.urgent {
+	color: @background;
+	border-radius: 16px;
+	background-color: @red;
+	min-width: 50px;
+	background-size: 400% 400%;
+	transition: all 0.3s ease-in-out;
+}
+
+#workspaces button.persistent {
+	border-radius: 16px;
+}
+
+#workspaces button.empty {
+  opacity: 0.35;
+}
+
+#battery,
+#bluetooth,
+#clock,
+#idle_inhibitor,
+#mpris,
+#network,
+#taskbar,
+#window,
+#audio,
+#tray-expander {
+	padding: 0px 16px;
+	background-color: @background;
+	margin: 0 0 0 4px;
+	border-radius: 16px;
+	border: 1px solid @bright_black;
+}
+
+#tray-icons {
+	padding: 0 8px;
+}
+
+#battery {
+	color: @green;
+}
+
+#clock {
+	color: @blue;
+}
+
+#network {
+	color: @yellow;
+}
+
+#pulseaudio {
+	color: @magenta;
+}
+
+#mpris {
+	color: @green;
+	background-color: @background;
+}
+
+#tray {
+	color: @red;
+}
+
+#expand-icon {
+	margin-right: 12px;
+}
+/*-----Indicators----*/
+#custom-hypridle.notactive,
+#idle_inhibitor.activated {
+	color: @green;
+}
+
+#pulseaudio.muted {
+	color: @bright_red;
+}
+
+#battery.critical:not(.charging) {
+	color: @bright_red;
+}
+
+#custom-omarchy {
+	background-color: @background;
+	color: @yellow;
+	padding: 4px 8px;
+	border-radius: 8px;
+	border: 1px solid @bright_black;
+}
+
+#custom-expand-icon {
+	margin-right: 4px;
+}
+
+
+#pulseaudio.microphone {
+  margin-left: 10px;
+}

@@ -1,0 +1,29 @@
+{
+  "reload_style_on_change": true,
+  "position": "top",
+  "height": 25,
+  "include": [
+    "$HOME/.config/waybar/Modules",
+    "$HOME/.config/waybar/ModulesWorkspaces",
+    "$HOME/.config/waybar/ModulesCustom",
+    "$HOME/.config/waybar/ModulesGroups"
+  ],
+  "margin-top": 5,
+  "margin-left": 3,
+  "margin-right": 3,
+  "modules-left": [
+    "custom/omarchy",
+    "clock",
+    "mpris"
+  ],
+  "modules-center": [
+    "hyprland/workspaces#expander"
+  ],
+  "modules-right": [
+    "group/tray-expander",
+    "group/audio",
+    "network",
+    "custom/update",
+    "battery"
+  ]
+}
